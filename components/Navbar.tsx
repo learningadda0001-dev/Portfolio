@@ -40,7 +40,7 @@ export default function Navbar() {
           data-cursor-hover
           className="font-mono text-sm tracking-wider text-white/90"
         >
-          Chethan TV<span className="text-signal"></span>
+          Chethan T V<span className="text-signal"></span>
         </a>
         <ul className="hidden items-center gap-7 md:flex">
           {links.map((l) => (
