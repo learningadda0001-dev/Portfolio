@@ -145,7 +145,6 @@ export default function Hero() {
             transition={{ delay: 0.1, duration: 0.7 }}
             className="font-mono-label mb-4 text-[11px] text-signal/80"
           >
-            // building production systems since 2022
           </motion.p>
 
           <motion.h1

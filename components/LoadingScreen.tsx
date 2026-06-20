@@ -26,7 +26,7 @@ export default function LoadingScreen() {
             transition={{ duration: 0.5 }}
             className="font-mono text-2xl tracking-widest text-white"
           >
-            CTV<span className="text-signal">.</span>
+            Loading..<span className="text-signal">.</span>
           </motion.span>
           <div className="h-[2px] w-40 overflow-hidden rounded-full bg-white/10">
             <motion.div
