@@ -21,11 +21,13 @@ export default function SkillCard({
   title,
   icon,
   items,
+  level,
   index,
 }: {
   title: string;
   icon: string;
   items: string[];
+  level: number;
   index: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -69,18 +71,34 @@ export default function SkillCard({
               "radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(125,211,252,0.12), transparent 70%)",
           }}
         />
-        <div
-          className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5"
-          style={{ transform: "translateZ(40px)" }}
-        >
-          <Icon className="h-5 w-5 text-signal" />
+        <div className="flex items-start justify-between" style={{ transform: "translateZ(40px)" }}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
+            <Icon className="h-5 w-5 text-signal" />
+          </div>
+          <span className="font-mono text-xs text-white/35">{level}%</span>
         </div>
+
         <h3
-          className="mb-4 font-display text-lg font-semibold text-white"
+          className="mb-3 mt-5 font-display text-lg font-semibold text-white"
           style={{ transform: "translateZ(30px)" }}
         >
           {title}
         </h3>
+
+        {/* animated proficiency indicator */}
+        <div
+          className="mb-5 h-1.5 w-full overflow-hidden rounded-full bg-white/8"
+          style={{ transform: "translateZ(25px)" }}
+        >
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: `${level}%` }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 1.1, delay: 0.15 + index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+            className="h-full rounded-full bg-gradient-to-r from-signal via-violet to-amber"
+          />
+        </div>
+
         <div className="flex flex-wrap gap-2" style={{ transform: "translateZ(20px)" }}>
           {items.map((item) => (
             <span

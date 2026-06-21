@@ -38,9 +38,9 @@ export default function Navbar() {
         <a
           href="#hero"
           data-cursor-hover
-          className="font-mono text-sm tracking-wider text-white/90"
+          className="font-display text-sm font-semibold tracking-tight text-white/90 sm:text-base"
         >
-          Chethan T V<span className="text-signal"></span>
+          Chethan T V
         </a>
         <ul className="hidden items-center gap-7 md:flex">
           {links.map((l) => (

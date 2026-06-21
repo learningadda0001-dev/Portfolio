@@ -13,6 +13,9 @@ export const profile = {
   linkedinHref: "https://linkedin.com/in/chethan-t-v",
   location: "Mysore, Karnataka, India",
   image: "/portfolio1.jpg",
+  // Add your real Calendly link (e.g. "https://calendly.com/your-handle/30min").
+  // Leave empty and the "Book a call" button stays disabled until you set this.
+  calendlyUrl: "",
 };
 
 export const about = `Results-driven Software Developer with 4.3 years of experience building scalable web applications using PHP, CodeIgniter, Laravel, C#, and ASP.NET Core. Skilled in RESTful APIs, third-party integrations (Payment Gateways, Trading APIs), database design & optimization (MySQL, PostgreSQL), and delivering clean, maintainable code.`;
@@ -23,25 +26,32 @@ export const stats = [
   { label: "Core Technologies", value: 9, suffix: "+" },
 ];
 
+// "level" is an illustrative proficiency estimate (0-100) based on years of
+// hands-on use described in your experience — adjust these freely, they are
+// not pulled from any external source.
 export const skillGroups = [
   {
     title: "Languages",
     icon: "Code2",
+    level: 90,
     items: ["PHP", "C#", "SQL", "HTML", "CSS", "jQuery"],
   },
   {
     title: "Frameworks",
     icon: "Layers",
+    level: 88,
     items: ["CodeIgniter", "Laravel", "ASP.NET Core"],
   },
   {
     title: "Databases",
     icon: "Database",
+    level: 82,
     items: ["MySQL", "PostgreSQL"],
   },
   {
     title: "Tools & APIs",
     icon: "Wrench",
+    level: 85,
     items: ["Postman", "phpMyAdmin", "Visual Studio", "REST APIs"],
   },
 ];

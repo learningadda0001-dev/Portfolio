@@ -1,9 +1,10 @@
 import { Linkedin, Mail, Download } from "lucide-react";
 import { profile } from "@/lib/data";
+import TooltipIconLink from "@/components/TooltipIconLink";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 mt-24">
+    <footer className="relative border-t border-white/10 mt-24">
       <div className="mx-auto max-w-5xl px-6 py-12">
 
         {/* CTA Section */}
@@ -19,42 +20,23 @@ export default function Footer() {
 
           <div className="mt-4 flex items-center justify-center gap-2 text-signal">
             <span className="status-dot h-2 w-2 rounded-full bg-signal"></span>
-            <span className="font-mono-label text-xs">
-              Available for opportunities
-            </span>
+            <span className="font-mono-label text-xs">Available for opportunities</span>
           </div>
         </div>
 
         {/* Social Links */}
         <div className="flex justify-center gap-6 mb-10">
-
-          <a
-            href={profile.linkedinHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-white/70 transition hover:scale-110 hover:bg-white/10 hover:text-signal"
-          >
+          <TooltipIconLink href={profile.linkedinHref} label="LinkedIn" external>
             <Linkedin className="h-5 w-5" />
-          </a>
+          </TooltipIconLink>
 
-          <a
-            href={`mailto:${profile.email}`}
-            aria-label="Email"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-white/70 transition hover:scale-110 hover:bg-white/10 hover:text-signal"
-          >
+          <TooltipIconLink href={`mailto:${profile.email}`} label="Email">
             <Mail className="h-5 w-5" />
-          </a>
+          </TooltipIconLink>
 
-          <a
-            href="/chethantv_resume.pdf"
-            download
-            aria-label="Download Resume"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-white/70 transition hover:scale-110 hover:bg-white/10 hover:text-signal"
-          >
+          <TooltipIconLink href="/chethantv_resume.pdf" label="Download Resume" download>
             <Download className="h-5 w-5" />
-          </a>
-
+          </TooltipIconLink>
         </div>
 
         {/* Bottom Section */}

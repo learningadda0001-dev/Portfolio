@@ -17,75 +17,78 @@ export default function ParticleField() {
     const height = mount.clientHeight;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
-    camera.position.z = 14;
+    const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
+    camera.position.set(0, 0, 15);
 
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: true,
-    });
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mount.appendChild(renderer.domElement);
 
-    const COUNT = 800;
+    // ---- Ambient particle field ----
+    const COUNT = 650;
     const positions = new Float32Array(COUNT * 3);
-    const speeds = new Float32Array(COUNT);
     for (let i = 0; i < COUNT; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 26;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 16;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 18;
-      speeds[i] = 0.2 + Math.random() * 0.6;
+      positions[i * 3] = (Math.random() - 0.5) * 28;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 18;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
     }
-
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-
     const material = new THREE.PointsMaterial({
-      size: 0.045,
+      size: 0.04,
       color: new THREE.Color("#9fd8ff"),
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.55,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
-
     const points = new THREE.Points(geometry, material);
     scene.add(points);
 
-    // subtle connecting lines for a small cluster (engineering / network feel)
-    const lineGeo = new THREE.BufferGeometry();
-    const linePositions: number[] = [];
-    const sample = 70;
-    for (let i = 0; i < sample; i++) {
-      const a = Math.floor(Math.random() * COUNT);
-      const b = Math.floor(Math.random() * COUNT);
-      const dx = positions[a * 3] - positions[b * 3];
-      const dy = positions[a * 3 + 1] - positions[b * 3 + 1];
-      const dz = positions[a * 3 + 2] - positions[b * 3 + 2];
-      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-      if (dist < 4) {
-        linePositions.push(
-          positions[a * 3], positions[a * 3 + 1], positions[a * 3 + 2],
-          positions[b * 3], positions[b * 3 + 1], positions[b * 3 + 2]
-        );
-      }
-    }
-    lineGeo.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(linePositions, 3)
-    );
-    const lineMat = new THREE.LineBasicMaterial({
+    // ---- 3D wireframe centerpiece: nested rotating polyhedra ----
+    const group = new THREE.Group();
+    group.position.set(0, 0, 0);
+
+    const outerGeo = new THREE.IcosahedronGeometry(4.4, 1);
+    const outerMat = new THREE.MeshBasicMaterial({
       color: new THREE.Color("#7dd3fc"),
+      wireframe: true,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.22,
     });
-    const lines = new THREE.LineSegments(lineGeo, lineMat);
-    scene.add(lines);
+    const outer = new THREE.Mesh(outerGeo, outerMat);
+    group.add(outer);
+
+    const innerGeo = new THREE.IcosahedronGeometry(2.6, 0);
+    const innerMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color("#a78bfa"),
+      wireframe: true,
+      transparent: true,
+      opacity: 0.3,
+    });
+    const inner = new THREE.Mesh(innerGeo, innerMat);
+    group.add(inner);
+
+    // small orbiting nodes (representing connected systems/APIs)
+    const nodeGeo = new THREE.SphereGeometry(0.05, 8, 8);
+    const nodeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color("#f5b75c") });
+    const orbiters: THREE.Mesh[] = [];
+    const ORBIT_COUNT = 6;
+    for (let i = 0; i < ORBIT_COUNT; i++) {
+      const node = new THREE.Mesh(nodeGeo, nodeMat.clone());
+      orbiters.push(node);
+      group.add(node);
+    }
+
+    group.position.x = 4.2;
+    group.rotation.x = 0.3;
+    scene.add(group);
 
     let raf = 0;
     let mouseX = 0;
     let mouseY = 0;
+    let scrollFactor = 0;
 
     function onMouseMove(e: MouseEvent) {
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -93,18 +96,40 @@ export default function ParticleField() {
     }
     window.addEventListener("mousemove", onMouseMove);
 
+    function onScroll() {
+      scrollFactor = Math.min(window.scrollY / (window.innerHeight || 1), 1.4);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     const clock = new THREE.Clock();
 
     function animate() {
       const t = clock.getElapsedTime();
-      points.rotation.y = t * 0.02 + mouseX * 0.08;
-      points.rotation.x = mouseY * 0.04;
-      lines.rotation.y = points.rotation.y;
-      lines.rotation.x = points.rotation.x;
+
+      points.rotation.y = t * 0.018 + mouseX * 0.06;
+      points.rotation.x = mouseY * 0.03;
+
+      outer.rotation.y = t * 0.12 + scrollFactor * 0.8;
+      outer.rotation.x = t * 0.05;
+      inner.rotation.y = -t * 0.18 - scrollFactor * 0.6;
+      inner.rotation.x = t * 0.09;
+
+      group.rotation.z = mouseX * 0.05;
+      group.position.y = -mouseY * 0.5 - scrollFactor * 1.2;
+
+      orbiters.forEach((node, i) => {
+        const a = t * 0.5 + (i / ORBIT_COUNT) * Math.PI * 2;
+        const r = 3.4 + Math.sin(t * 0.3 + i) * 0.3;
+        node.position.set(
+          Math.cos(a) * r,
+          Math.sin(a * 1.3) * 1.6,
+          Math.sin(a) * r
+        );
+      });
 
       if (!prefersReduced) {
-        camera.position.x += (mouseX * 1.2 - camera.position.x) * 0.02;
-        camera.position.y += (-mouseY * 0.8 - camera.position.y) * 0.02;
+        camera.position.x += (mouseX * 1.1 - camera.position.x) * 0.02;
+        camera.position.y += (-mouseY * 0.7 - camera.position.y) * 0.02;
         camera.lookAt(0, 0, 0);
       }
 
@@ -127,20 +152,20 @@ export default function ParticleField() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("scroll", onScroll);
       geometry.dispose();
       material.dispose();
-      lineGeo.dispose();
-      lineMat.dispose();
+      outerGeo.dispose();
+      outerMat.dispose();
+      innerGeo.dispose();
+      innerMat.dispose();
+      nodeGeo.dispose();
+      nodeMat.dispose();
+      orbiters.forEach((node) => (node.material as THREE.Material).dispose());
       renderer.dispose();
       mount.removeChild(renderer.domElement);
     };
   }, []);
 
-  return (
-    <div
-      ref={mountRef}
-      className="absolute inset-0 -z-10 opacity-80"
-      aria-hidden
-    />
-  );
+  return <div ref={mountRef} className="absolute inset-0 -z-10 opacity-80" aria-hidden />;
 }
