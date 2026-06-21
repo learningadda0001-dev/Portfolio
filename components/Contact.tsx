@@ -131,7 +131,6 @@ export default function Contact() {
                 <Mail className="h-4 w-4" />
                 Hire Me
               </MagneticButton>
-              <CalendlyButton />
             </motion.div>
           </div>
         </motion.div>
